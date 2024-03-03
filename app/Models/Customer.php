@@ -18,6 +18,10 @@ class Customer extends Model
         'status'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime'
+    ];
+
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
