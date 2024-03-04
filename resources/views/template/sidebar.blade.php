@@ -5,8 +5,8 @@
         <a href="#" class="list-group-item list-group-item-action bg-transparent second-text active">
             Dashboard
         </a>
-        <a href="#" class="list-group-item list-group-item-action bg-transparent second-text active">
-            Cadastrar Venda
+        <a href="{{ route('sales.index') }}" class="list-group-item list-group-item-action bg-transparent second-text active">
+            Controle de Vendas
         </a>
         <a href="{{ route('customers.index') }}" class="list-group-item list-group-item-action bg-transparent second-text active">
             Cadastrar Cliente

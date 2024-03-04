@@ -26,7 +26,7 @@
     </div>
     </div>
     @include('template.js')
-
+    @yield('scripts')
 </body>
 
 </html>

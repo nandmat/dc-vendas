@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('seller_id');
             $table->unsignedBigInteger('customer_id');
             $table->decimal('value', 8, 2);
+            $table->json('parts')->nullable();
             $table->timestamps();
 
             $table->foreign('seller_id')

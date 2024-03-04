@@ -17,6 +17,13 @@ class Sale extends Model
         'seller_id',
         'customer_id',
         'value',
+        'parts'
+    ];
+
+
+    protected $casts = [
+        'part' => 'array',
+        'created_at' => 'datetime'
     ];
 
     public function seller(): BelongsTo
