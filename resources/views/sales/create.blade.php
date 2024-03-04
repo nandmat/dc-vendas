@@ -40,7 +40,7 @@
                 <div class="col-md-2" id="products">
                     <div class="form-group">
                         <label for="">Valor Unitário:</label>
-                        <input type="text" class="form-control" id="inputUnitaryValue">
+                        <input type="text" oninput="validateInputsNumber(this)" class="form-control" id="inputUnitaryValue">
                     </div>
                 </div>
 
@@ -55,7 +55,7 @@
                 <div class="col-md-2" id="products">
                     <div class="form-group">
                         <label for="">Total:</label>
-                        <input type="number" class="form-control" id="inputAmount">
+                        <input type="text" oninput="validateInputsNumber(this)" class="form-control" id="inputAmount">
                     </div>
                 </div>
 
@@ -80,7 +80,7 @@
                     <hr class="hr mt-1 mb-1" id="products">
                     <h6 class=" mt-3" id="products">Total</h6>
                     <div class="col-md-2">
-                        <input type="number" name="final_amount" value="" class="form-control inputFinalAmount">
+                        <input step="any" type="text" name="final_amount" value="" class="form-control inputFinalAmount">
                         <select name="paymentMethod" id="payment-method" class="form-select mt-3">
                             <option value=""></option>
                             <option value="part">Parcelado</option>

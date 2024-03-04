@@ -89,15 +89,18 @@ function addProducts() {
     });
     let inputQuantity = document.createElement('input');
     inputQuantity.classList.add('form-control', 'mx-1', 'my-1', `input-quantity-${idName}`);
-    inputQuantity.type = 'number';
     inputQuantity.value = quantity.value;
     inputQuantity.min = 1;
 
 
+
     let inputProduct = document.createElement('input');
     inputProduct.classList.add('form-control', 'mx-1', 'my-1', `input-product-${idName}`);
-    inputProduct.type = 'number';
     inputProduct.value = amount.value;
+
+    inputProduct.addEventListener('input', function (event) {
+        validateInputsNumber(event);
+    })
 
     paragraphProduct.appendChild(h6);
     paragraphProduct.appendChild(inputQuantity);
@@ -109,10 +112,10 @@ function addProducts() {
     //toda vez que adicionar um novo produto nos proudtos selecionando vai atualizar o valor final
     //da venda;
     if (parseFloat(finalAmount.value) > 0) {
-        finalAmount.value = (parseFloat(finalAmount.value) + parseFloat(amount.value)).replace(/,/g, '.');;
+        finalAmount.value = (parseFloat(finalAmount.value) + parseFloat(amount.value));
 
     } else {
-        finalAmount.value = parseFloat(amount.value).toFixed(2).replace(/,/g, '.');;
+        finalAmount.value = parseFloat(amount.value).toFixed(2);
     }
 
     inputProduct.id = `value-product-${productId.value}`;
@@ -128,11 +131,11 @@ function addProducts() {
 
         productsArray.forEach((product) => {
             if (product.id == id) {
-                productInput.value = parseFloat(product.price * value).toFixed(2).replace(/,/g, '.');;
+                productInput.value = parseFloat(product.price * value).toFixed(2);
 
                 finalAmount.value = parseFloat(
                     (parseFloat(finalAmount.value) - parseFloat(oldValue))
-                    + parseFloat(productInput.value)).toFixed(2).replace(/,/g, '.');;
+                    + parseFloat(productInput.value)).toFixed(2);
             }
         });
 
@@ -180,15 +183,15 @@ function getProductById(id) {
             return response.json();
         })
         .then(data => {
-            unitaryValue.value = parseFloat(data.price).toFixed(2).replace(/,/g, '.');
+            unitaryValue.value = parseFloat(data.price).toFixed(2);
             quantity.value = 1;
-            amount.value = parseFloat(data.price).toFixed(2).replace(/,/g, '.');
+            amount.value = parseFloat(data.price).toFixed(2);
 
             if (!productsArray.includes(parseInt(data.product_id))) {
                 productsArray.push({
                     id: parseInt(data.product_id),
                     name: data.name,
-                    price: parseFloat(data.price).toFixed(2).replace(/,/g, '.')
+                    price: parseFloat(data.price).toFixed(2)
                 });
             }
 
@@ -214,7 +217,7 @@ quantity.addEventListener('input', function (event) {
     if (parseInt(value) < 1) {
         alert("A quantidade não pode ser menor que 1!");
         quantity.value = 1;
-        amount.value = (parseFloat(unitaryValue.value)).toFixed(2).replace(/,/g, '.');;
+        amount.value = (parseFloat(unitaryValue.value)).toFixed(2);
         return;
     }
 
@@ -239,7 +242,7 @@ paymentMethod.addEventListener('change', function (event) {
 function generateParts() {
 
     let parts = parseInt(partsQuantity.value);
-    let partValue = parseFloat(parseFloat(finalAmount.value) / parts).toFixed(2).replace(/,/g, '.');
+    let partValue = parseFloat(parseFloat(finalAmount.value) / parts).toFixed(2);
 
     console.log(partValue);
 
@@ -272,10 +275,13 @@ function generateParts() {
         //Cria o input que vai receber o valor da parcela
         let inputPartValue = document.createElement('input');
         inputPartValue.classList.add('form-control', 'mt-3', 'mb-2');
-        inputPartValue.type = 'number';
-        inputPartValue.value = parseFloat(partValue).toFixed(2).replace(/,/g, '.');;
+        inputPartValue.value = parseFloat(partValue).toFixed(2);
         inputPartValue.name = `part[${i}][value]`;
         inputPartValue.id = `part-value-${i}`;
+        inputPartValue.addEventListener('input', function (event) {
+            validateInputsNumber(event);
+        })
+
 
         inputPartValue.addEventListener('input', function (event) {
             let value = event.target.value;
@@ -296,25 +302,68 @@ btnParts.addEventListener('click', function () {
 
 
 function alterPartsValue(value, idInput) {
+    //Pega o valor total de parcelas
     let parts = parseInt(partsQuantity.value);
+    let totalAmount = parseFloat(finalAmount.value);
 
-    //gera o valor restante: valor da parcela personalizada menos o total da venda;
-    let rest = parseFloat(parseFloat(finalAmount.value) - parseFloat(value)).toFixed(2).replace(/,/g, '.');;
+    // Novo valor restante para parcelar
+    let rest = totalAmount - value;
 
-    //gera o novo valor das parcelas restantes
-    let newValuePart = parseFloat(rest / parts).toFixed(2).replace(/,/g, '.');;
+    /**
+     * Recupera o novo valor de parcelamento fazendo um cálculo descontanto uma parcela que é a que foi alterada o valor
+     */
+    let newValuePart = (rest / (parts - 1)).toFixed(2);
 
-    for (i = 1; i <= parts; i++) {
+    // Se o valor da parcela personalizada for igual ao valor total da compra
+    if (value === totalAmount) {
+        // Se o valor da parcela personalizada for igual o valor total da compra, as outras parcelas ficam zeradas.
+        for (let i = 1; i <= parts; i++) {
+            let selector = `part-value-${i}`;
+            let input = document.querySelector(`#${selector}`);
+            if (input && selector !== idInput) {
+                input.value = 0;
+            }
+        }
+    } else {
+        let sum = parseFloat(value);
 
-        //procura pelo id correspondente do input
-        let selector = `part-value-${i}`;
+        for (let i = 1; i <= parts; i++) {
+            let selector = `part-value-${i}`;
 
-        if (selector !== idInput) {
-            //Atribui o novo valor a parcela
-            let input = document.querySelector(`#part-value-${i}`);
-            input.value = newValuePart;
+            //Verificar se id é o mesmo do definido no selector
+            if (selector !== idInput) {
+                let input = document.querySelector(`#${selector}`);
+                if (input) {
+                    input.value = newValuePart;
+                    sum += parseFloat(newValuePart);
+                }
+            }
         }
     }
-
 }
 
+
+//Função responsável por validar os inputs e permitir apenas que seja informado numeros, decimais ou n
+function validateInputsNumber(event) {
+    let value = event.value == null ? event.target.value : event.value;
+
+    console.log(value);
+    //Não permite que seja escrito letras ou nada que n seja um numero
+    value = value.replace(/[^\d.]/g, '');
+
+    //Aceitar decimais
+    value = value.replace(/(\..*)\./g, '$1');
+
+    // Apenas um ponto no numero
+    const decimalCount = (value.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+        value = value.substring(0, value.lastIndexOf('.'));
+    }
+
+    // Atualiza o valor com base se o evento foi adicionado diretamento no html ou se foi através do addEventListener
+    if (event.value == null) {
+        event.target.value = value;
+        return;
+    }
+    event.value = value;
+}
