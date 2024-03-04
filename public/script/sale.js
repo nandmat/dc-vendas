@@ -90,6 +90,7 @@ function addProducts() {
     let inputQuantity = document.createElement('input');
     inputQuantity.classList.add('form-control', 'mx-1', 'my-1', `input-quantity-${idName}`);
     inputQuantity.value = quantity.value;
+    inputQuantity.type = 'number';
     inputQuantity.min = 1;
 
 
